@@ -10,6 +10,7 @@ import { renameFile } from './fs/rn.js'
 import { copyFile } from './fs/cp.js'
 import { moveFile } from './fs/mv.js'
 import { deleteFile } from './fs/rm.js'
+import { calculateHash } from './hash/hash.js'
 
 const currentUser = parseArgs()
 let currDir = os.homedir()
@@ -68,6 +69,13 @@ async function runner() {
                 case 'rm':
                     inputInterface.write(await deleteFile(command[1]))
                     break
+                case 'hash':
+                    inputInterface.write(await calculateHash(command[1]))
+                    break
+                default:
+                // inputInterface.write(
+                //     'Invalid input\n' + process.cwd() + '\n'
+                // )
             }
         })
         .on('SIGINT', () => {
