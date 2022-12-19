@@ -8,6 +8,8 @@ import { read } from './fs/cat.js'
 import { createFile } from './fs/add.js'
 import { renameFile } from './fs/rn.js'
 import { copyFile } from './fs/cp.js'
+import { moveFile } from './fs/mv.js'
+import { deleteFile } from './fs/rm.js'
 
 const currentUser = parseArgs()
 let currDir = os.homedir()
@@ -59,6 +61,12 @@ async function runner() {
                     break
                 case 'cp':
                     inputInterface.write(await copyFile(command[1], command[2]))
+                    break
+                case 'mv':
+                    inputInterface.write(await moveFile(command[1], command[2]))
+                    break
+                case 'rm':
+                    inputInterface.write(await deleteFile(command[1]))
                     break
             }
         })
