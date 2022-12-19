@@ -11,6 +11,7 @@ import { copyFile } from './fs/cp.js'
 import { moveFile } from './fs/mv.js'
 import { deleteFile } from './fs/rm.js'
 import { calculateHash } from './hash/hash.js'
+import { compress, decompress } from './zip/zip.js'
 
 const currentUser = parseArgs()
 let currDir = os.homedir()
@@ -71,6 +72,14 @@ async function runner() {
                     break
                 case 'hash':
                     inputInterface.write(await calculateHash(command[1]))
+                    break
+                case 'compress':
+                    inputInterface.write(await compress(command[1], command[2]))
+                    break
+                case 'decompress':
+                    inputInterface.write(
+                        await decompress(command[1], command[2])
+                    )
                     break
                 default:
                 // inputInterface.write(
