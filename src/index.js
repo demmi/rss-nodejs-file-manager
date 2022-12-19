@@ -1,5 +1,4 @@
 import { parseArgs } from './utils/args.js'
-import { createInterface } from 'node:readline'
 import os from 'node:os'
 import { changeDirectory, list } from './fs/navigate.js'
 import { osOperations } from './os/os.js'
@@ -18,81 +17,69 @@ let currDir = os.homedir()
 process.chdir(currDir)
 
 async function runner() {
-    const inputInterface = createInterface({
-        input: process.stdin,
-        output: process.stdout,
+    process.stdout.write(`Welcome to the File Manager, ${currentUser}!\n`)
+    process.stdout.write(process.cwd() + '\n')
+
+    process.stdin.on('data', async (input) => {
+        const command = input.toString().trim().split(' ')
+        switch (command[0]) {
+            case '.exit':
+                process.stdout.write(
+                    `Thank you for using File Manager, ${currentUser}!`
+                )
+                process.exit()
+                break
+            case 'os':
+                process.stdout.write(osOperations(command[1]))
+                break
+            case 'ls':
+                await list(process.cwd())
+                break
+            case 'up':
+                currDir = path.resolve(process.cwd(), '..')
+                process.chdir(currDir)
+                process.stdout.write(process.cwd() + '\n')
+                break
+            case 'cd':
+                process.stdout.write(await changeDirectory(command[1]))
+                break
+            case 'cat':
+                process.stdout.write(await read(command[1]))
+                break
+            case 'add':
+                process.stdout.write(await createFile(command[1]))
+                break
+            case 'rn':
+                process.stdout.write(await renameFile(command[1], command[2]))
+                break
+            case 'cp':
+                process.stdout.write(await copyFile(command[1], command[2]))
+                break
+            case 'mv':
+                process.stdout.write(await moveFile(command[1], command[2]))
+                break
+            case 'rm':
+                process.stdout.write(await deleteFile(command[1]))
+                break
+            case 'hash':
+                process.stdout.write(await calculateHash(command[1]))
+                break
+            case 'compress':
+                process.stdout.write(await compress(command[1], command[2]))
+                break
+            case 'decompress':
+                process.stdout.write(await decompress(command[1], command[2]))
+                break
+            default:
+                process.stdout.write('Invalid input\n' + process.cwd() + '\n')
+        }
     })
-
-    inputInterface.write(`Welcome to the File Manager, ${currentUser}!\n`)
-    inputInterface.write(process.cwd() + '\n')
-
-    inputInterface
-        .on('line', async (input) => {
-            const command = input.trim().split(' ')
-            switch (command[0]) {
-                case '.exit':
-                    inputInterface.write(
-                        `Thank you for using File Manager, ${currentUser}!`
-                    )
-                    process.exit()
-                    break
-                case 'os':
-                    inputInterface.write(osOperations(command[1]))
-                    break
-                case 'ls':
-                    await list(process.cwd())
-                    break
-                case 'up':
-                    currDir = path.resolve(process.cwd(), '..')
-                    process.chdir(currDir)
-                    inputInterface.write(process.cwd() + '\n')
-                    break
-                case 'cd':
-                    inputInterface.write(await changeDirectory(command[1]))
-                    break
-                case 'cat':
-                    inputInterface.write(await read(command[1]))
-                    break
-                case 'add':
-                    inputInterface.write(await createFile(command[1]))
-                    break
-                case 'rn':
-                    inputInterface.write(
-                        await renameFile(command[1], command[2])
-                    )
-                    break
-                case 'cp':
-                    inputInterface.write(await copyFile(command[1], command[2]))
-                    break
-                case 'mv':
-                    inputInterface.write(await moveFile(command[1], command[2]))
-                    break
-                case 'rm':
-                    inputInterface.write(await deleteFile(command[1]))
-                    break
-                case 'hash':
-                    inputInterface.write(await calculateHash(command[1]))
-                    break
-                case 'compress':
-                    inputInterface.write(await compress(command[1], command[2]))
-                    break
-                case 'decompress':
-                    inputInterface.write(
-                        await decompress(command[1], command[2])
-                    )
-                    break
-                default:
-                // inputInterface.write(
-                //     'Invalid input\n' + process.cwd() + '\n'
-                // )
-            }
-        })
-        .on('SIGINT', () => {
-            inputInterface.write(
-                `Thank you for using File Manager, ${currentUser}!`
-            )
-            process.exit()
-        })
+    process.on('SIGINT', () => {
+        process.stdout.write(
+            `Thank you for using File Manager, ${currentUser}!`
+        )
+        process.exit()
+    })
 }
 
 runner()
