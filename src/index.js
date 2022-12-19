@@ -6,6 +6,7 @@ import { osOperations } from './os/os.js'
 import path from 'node:path'
 import { read } from './fs/cat.js'
 import { createFile } from './fs/add.js'
+import { renameFile } from './fs/rn.js'
 
 const currentUser = parseArgs()
 let currDir = os.homedir()
@@ -49,6 +50,11 @@ async function runner() {
                     break
                 case 'add':
                     inputInterface.write(await createFile(command[1]))
+                    break
+                case 'rn':
+                    inputInterface.write(
+                        await renameFile(command[1], command[2])
+                    )
                     break
             }
         })

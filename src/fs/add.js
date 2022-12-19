@@ -6,10 +6,11 @@ export const createFile = async (filename) => {
         return 'Invalid input\n' + process.cwd() + '\n'
     }
     const fileToCreate = path.resolve(process.cwd(), filename)
-    await open(fileToCreate, 'wx').catch((err) => {
+    let fileHandle = await open(fileToCreate, 'wx').catch((err) => {
         if (err.code === 'EEXIST') {
             process.stdout.write('Operation failed\n')
         }
     })
+    await fileHandle.close()
     return process.cwd() + '\n'
 }
