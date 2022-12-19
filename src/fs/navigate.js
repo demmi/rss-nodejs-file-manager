@@ -1,15 +1,11 @@
-import os from 'node:os'
 import { readdir } from 'node:fs/promises'
-
-export const homeDir = () => {
-    return os.homedir()
-}
+import path from 'node:path'
 
 export const list = async (directory) => {
     const dirList = await readdir(directory, { withFileTypes: true }).catch(
         (err) => {
             if (err.code === 'ENOENT') {
-                return 'Operation failed'
+                return 'Operation failed' + process.cwd() + '\n'
             }
         }
     )
@@ -23,4 +19,18 @@ export const list = async (directory) => {
         .sort((a, b) => a.Name.localeCompare(b.Name))
 
     console.table([...directories, ...files])
+    console.log(process.cwd())
+}
+
+export const changeDirectory = async (directory) => {
+    if (!directory) {
+        return 'Invalid input\n' + process.cwd() + '\n'
+    }
+    let newPath = path.resolve(process.cwd(), directory)
+    try {
+        process.chdir(newPath)
+        return process.cwd() + '\n'
+    } catch (err) {
+        return 'Operation failed\n' + process.cwd() + '\n'
+    }
 }

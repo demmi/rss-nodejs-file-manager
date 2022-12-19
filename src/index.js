@@ -1,11 +1,15 @@
 import { parseArgs } from './utils/args.js'
 import { createInterface } from 'node:readline'
 import os from 'node:os'
-import { homeDir, list } from './fs/navigate.js'
+import { changeDirectory, list } from './fs/navigate.js'
 import { osOperations } from './os/os.js'
+import path from 'node:path'
+import { read } from './fs/cat.js'
+import { createFile } from './fs/add.js'
 
 const currentUser = parseArgs()
-let currDir = homeDir()
+let currDir = os.homedir()
+process.chdir(currDir)
 
 async function runner() {
     const inputInterface = createInterface({
@@ -14,6 +18,7 @@ async function runner() {
     })
 
     inputInterface.write(`Welcome to the File Manager, ${currentUser}!\n`)
+    inputInterface.write(process.cwd() + '\n')
 
     inputInterface
         .on('line', async (input) => {
@@ -29,7 +34,22 @@ async function runner() {
                     inputInterface.write(osOperations(command[1]))
                     break
                 case 'ls':
-                    await list(currDir)
+                    await list(process.cwd())
+                    break
+                case 'up':
+                    currDir = path.resolve(process.cwd(), '..')
+                    process.chdir(currDir)
+                    inputInterface.write(process.cwd() + '\n')
+                    break
+                case 'cd':
+                    inputInterface.write(await changeDirectory(command[1]))
+                    break
+                case 'cat':
+                    inputInterface.write(await read(command[1]))
+                    break
+                case 'add':
+                    inputInterface.write(await createFile(command[1]))
+                    break
             }
         })
         .on('SIGINT', () => {
