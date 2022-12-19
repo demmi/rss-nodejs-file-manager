@@ -7,6 +7,7 @@ import path from 'node:path'
 import { read } from './fs/cat.js'
 import { createFile } from './fs/add.js'
 import { renameFile } from './fs/rn.js'
+import { copyFile } from './fs/cp.js'
 
 const currentUser = parseArgs()
 let currDir = os.homedir()
@@ -55,6 +56,9 @@ async function runner() {
                     inputInterface.write(
                         await renameFile(command[1], command[2])
                     )
+                    break
+                case 'cp':
+                    inputInterface.write(await copyFile(command[1], command[2]))
                     break
             }
         })
